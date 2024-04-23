@@ -1,6 +1,6 @@
 # FormationControl
 
-The following codes are used for computational simulations in the paper titled "Formation control between leader and migratory follower tissues allows coordinated growth of zebrafish midline tissues" by Kawanishi et al.
+The following codes are used for computational simulations in the paper titled "Formation control between leader and migratory follower tissues allows coordinated growth of zebrafish midline tissues" by Toru Kawanishi, Takamichi Sushida, Tony Y.-C. Tsai, Hiroyuki Takeda, and Sean G. Megason
 
 
 ## Vertex Model for FP Simulation (for Mac)
