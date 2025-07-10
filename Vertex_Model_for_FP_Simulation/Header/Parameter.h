@@ -54,23 +54,23 @@ double b = 0.5;
 double Init_Length = 2.0;
 double Ideal_Length = 0.0;
 
-//Adhesion to ECM: Parameter c in Table S1
+//Adhesion to ECM: Parameter c in Table 1
 double Basal_Adhesion_Parameter = 100.0;
 
-//Repulsion for Apical surface: Parameter d in Table S1
+//Repulsion for Apical surface: Parameter d in Table 1
 double Apical_Repulsion_Parameter = 100.0;
 
-//Parameter sigma in Table S1
+//Parameter sigma in Table 1
 double sigma = 0.2;
 
-//Potential energy threshold: Parameter Uth in Table S1
+//Potential energy threshold: Parameter Uth in Table 1
 double Threshold = 2.5;
 
 //Migration Force Parameter
 double Velocity_Index = 1.0; //Parameter alpha
-double Migration_Parameter = 2.0; //Parameter v_max in Table S1
+double Migration_Parameter = 2.0; //Parameter v_max in Table 1
 
-//Cell Division Timing: Parameter S_i in Table S1
+//Cell Division Timing: Parameter S_i in Table 1
 double Divide_Timing = 4.0;
 
 //Time constant for a differential equation of Migration Force

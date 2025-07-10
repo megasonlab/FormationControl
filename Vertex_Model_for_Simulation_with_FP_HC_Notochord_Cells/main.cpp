@@ -13,8 +13,11 @@ extern "C" {
     #include <mt19937ar.h>
 };
 
+//VectorStructOperator.h
+//http://www3.u-toyama.ac.jp/akiyama/
+#include <VectorStructOperator.h>
+
 //Header files for Simulation of Vertex model
-#include"./Header/Vector.h"
 #include"./Header/Parameter.h"
 #include"./Header/Function.h"
 
@@ -30,8 +33,8 @@ int main(int argc, char *argv[]) {
     //Next we excute the executable File "run" as "./run 1 2 1".
     
     //Seed of Random Number
-//    unsigned int seed = (unsigned int)time(NULL) + test_index;
-    unsigned int seed = 1;
+    unsigned int seed = (unsigned int)time(NULL) + test_index;
+//    unsigned int seed = 1;
     init_genrand(seed);
     
     FILE *fp;
@@ -135,8 +138,8 @@ int main(int argc, char *argv[]) {
     g_set_antialiasing(4);
     
     //Window Setting
-//    g_init("Simulation of 2D Vertex model", WINDOW_SIZE_X, WINDOW_SIZE_Y);
-    g_init(G_OFF_SCREEN, WINDOW_SIZE_X, WINDOW_SIZE_Y);
+    g_init("Simulation of 2D Vertex model", WINDOW_SIZE_X, WINDOW_SIZE_Y);
+//    g_init(G_OFF_SCREEN, WINDOW_SIZE_X, WINDOW_SIZE_Y);
     
     //Background Color
     g_scr_color(1,1,1);

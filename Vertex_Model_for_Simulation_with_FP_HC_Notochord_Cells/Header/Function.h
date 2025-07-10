@@ -12,7 +12,7 @@ typedef struct{
 } Cell;
 
 double Uniform_Random_Number(){
-    return genrand_real2();
+    return genrand_real3();
 }
 double Normal_Distribution(double mu, double sigma){
     return mu + sigma * sqrt(-2.0 * log(Uniform_Random_Number())) * sin(2.0 * Pi * Uniform_Random_Number());

@@ -13,8 +13,11 @@ extern "C" {
     #include <mt19937ar.h>
 };
 
+//VectorStructOperator.h
+//http://www3.u-toyama.ac.jp/akiyama/
+#include <VectorStructOperator.h>
+
 //Header files for Simulation of Vertex model
-#include"./Header/Vector.h"
 #include"./Header/Parameter.h"
 #include"./Header/Function.h"
 
@@ -23,15 +26,44 @@ int main(int argc, char *argv[]) {
     
     //Command Line Parameters
     Velocity_Index = atof(argv[1]);
+    double Searching_Parameter_One = Velocity_Index;
     Migration_Parameter = atof(argv[2]);
+    double Searching_Parameter_Two = Migration_Parameter;
+    
+    //Parameter searches of Figure S9
+    //A (without cell division and cell migration)
+//    a = atof(argv[1]);
+//    double Searching_Parameter_One = a;
+//    b = atof(argv[2]);
+//    double Searching_Parameter_Two = b;
+    
+    //B
+//    a = atof(argv[1]);
+//    double Searching_Parameter_One = a;
+//    Velocity_Index = atof(argv[2]);
+//    double Searching_Parameter_Two = Velocity_Index;
+    
+    //C
+//    sigma = atof(argv[1]);
+//    double Searching_Parameter_One = sigma;
+//    Velocity_Index = atof(argv[2]);
+//    double Searching_Parameter_Two = Velocity_Index;
+    
+    //D
+//    Threshold = atof(argv[1]);
+//    double Searching_Parameter_One = Threshold;
+//    Velocity_Index = atof(argv[2]);
+//    double Searching_Parameter_Two = Velocity_Index;
+    
     int test_index = atoi(argv[3]);
+    
     //Example: We set Velocity_Index = 1, Migration_Parameter = 2, and test_index = 1.
     //We execute "makefile", then an executable file "run" is generated.
     //Next we excute the executable File "run" as "./run 1 2 1".
     
     //Seed of Random Number
-//    unsigned int seed = (unsigned int)time(NULL) + test_index;
-    unsigned int seed = 1;
+    unsigned int seed = (unsigned int)time(NULL) + test_index;
+//    unsigned int seed = 1;
     init_genrand(seed);
     
     FILE *fp;
@@ -86,8 +118,8 @@ int main(int argc, char *argv[]) {
     g_set_antialiasing(4);
     
     //Window Setting
-//    g_init("Simulation of 2D Vertex model", WINDOW_SIZE_X, WINDOW_SIZE_Y);
-    g_init(G_OFF_SCREEN, WINDOW_SIZE_X, WINDOW_SIZE_Y);
+    g_init("Simulation of 2D Vertex model", WINDOW_SIZE_X, WINDOW_SIZE_Y);
+//    g_init(G_OFF_SCREEN, WINDOW_SIZE_X, WINDOW_SIZE_Y);
     
     //Background Color
     g_scr_color(1,1,1);
@@ -99,16 +131,16 @@ int main(int argc, char *argv[]) {
 #ifdef usecapture
     sprintf(filename, "mkdir Image_%d", test_index);
     system(filename);
-    sprintf(filename, "./Image_%d/Capture_%4.4f_%4.4f", test_index, Velocity_Index, Migration_Parameter);
+    sprintf(filename, "./Image_%d/Capture_%4.4f_%4.4f", test_index, Searching_Parameter_One, Searching_Parameter_Two);
     g_capture_set(filename);
 #endif
     
     sprintf(filename, "mkdir Data_%d", test_index);
     system(filename);
     //FP Cell Division Data
-    sprintf(filename, "./Data_%d/FP_Division_Data_%4.4f_%4.4f.dat", test_index, Velocity_Index, Migration_Parameter);
+    sprintf(filename, "./Data_%d/FP_Division_Data_%4.4f_%4.4f.dat", test_index, Searching_Parameter_One, Searching_Parameter_Two);
     fp = fopen(filename, "a");
-    fprintf(fp, "%f %f\n", Velocity_Index, Migration_Parameter);
+    fprintf(fp, "%f %f\n", Searching_Parameter_One, Searching_Parameter_Two);
     fclose(fp);
 
     sprintf(filename, "mkdir Angle_Data_%d", test_index);
@@ -117,7 +149,7 @@ int main(int argc, char *argv[]) {
     sprintf(filename, "mkdir Migration_Activity_Data_%d", test_index);
     system(filename);
     
-    sprintf(filename, "./Data_%d/Seed_%4.4f_%4.4f.dat", test_index, Velocity_Index, Migration_Parameter);
+    sprintf(filename, "./Data_%d/Seed_%4.4f_%4.4f.dat", test_index, Searching_Parameter_One, Searching_Parameter_Two);
     fp = fopen(filename, "a");
     fprintf(fp, "%u\n", seed);
     fclose(fp);
@@ -170,9 +202,9 @@ int main(int argc, char *argv[]) {
             }
             
             //Angle Data at ECM Side Posterior Vertex of a Sinle FP Cell
-            sprintf(filename, "./Angle_Data_%d/FP_Angle_%4.4f_%4.4f.dat", test_index, Velocity_Index, Migration_Parameter);
+            sprintf(filename, "./Angle_Data_%d/FP_Angle_%4.4f_%4.4f.dat", test_index, Searching_Parameter_One, Searching_Parameter_Two);
             fp = fopen(filename, "w");
-            fprintf(fp, "%f %f\n", Velocity_Index, Migration_Parameter);
+            fprintf(fp, "%f %f\n", Searching_Parameter_One, Searching_Parameter_Two);
             for (int i=0; i<FP_Number; i++) {
                 Vector2D tmp_next = FP_Vertex[FP_Cell[i].index[2]] - FP_Vertex[FP_Cell[i].index[1]];
                 tmp_next = tmp_next / ~tmp_next;
@@ -321,7 +353,7 @@ int main(int argc, char *argv[]) {
 
                 FP_Cell_Order[CellNumber_Counter++] = tmp_FP_Cell_Order[i];
                 
-                sprintf(filename, "./Data_%d/FP_Division_Data_%4.4f_%4.4f.dat", test_index, Velocity_Index, Migration_Parameter);
+                sprintf(filename, "./Data_%d/FP_Division_Data_%4.4f_%4.4f.dat", test_index, Searching_Parameter_One, Searching_Parameter_Two);
                 fp = fopen(filename, "a");
                 fprintf(fp, "%f %d\n", t, tmp_FP_Cell_Order[i]);
                 fprintf(fp, "%f %d\n", t, FP_Number);
@@ -348,6 +380,10 @@ int main(int argc, char *argv[]) {
             Vector2D tmp_Rand_Vector = {Normal_Distribution(0, 1), Normal_Distribution(0, 1)};
             New_FP_Vertex[i] = FP_Vertex[i] + FP_Force[i] * dt
             + sigma * sqrt(dt) * tmp_Rand_Vector;
+//            if (25.71 < t && t < 25.72) {
+//                printf("%f: %d: %f %f\n", t, i, New_FP_Vertex[i].x, New_FP_Vertex[i].y);
+//                printf("%f: %d: %f %f\n", t, i, tmp_Rand_Vector.x, tmp_Rand_Vector.y);
+//            }
             //Movement of Left Side Vertices is controled by Control_Parameter
             if (i == FixedVertexBottom || i == FixedVertexTop) {
                 New_FP_Vertex[i].x *= Control_Parameter;
@@ -388,9 +424,9 @@ int main(int argc, char *argv[]) {
     system(filename);
     
     //Vertex Data of FP Cells
-    sprintf(filename, "./Vertex_Data_%d/FP_Vertex_%4.4f_%4.4f.dat", test_index, Velocity_Index, Migration_Parameter);
+    sprintf(filename, "./Vertex_Data_%d/FP_Vertex_%4.4f_%4.4f.dat", test_index, Searching_Parameter_One, Searching_Parameter_Two);
     fp = fopen(filename, "w");
-    fprintf(fp, "%f %f\n", Velocity_Index, Migration_Parameter);
+    fprintf(fp, "%f %f\n", Searching_Parameter_One, Searching_Parameter_Two);
     for (int i=0; i<FP_Number; i++) {
         fprintf(fp, "%f\n", FP_CellCentroid[i].x);
     }
