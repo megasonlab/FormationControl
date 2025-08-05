@@ -202,18 +202,18 @@ int main(int argc, char *argv[]) {
             }
             
             //Angle Data at ECM Side Posterior Vertex of a Sinle FP Cell
-            sprintf(filename, "./Angle_Data_%d/FP_Angle_%4.4f_%4.4f.dat", test_index, Searching_Parameter_One, Searching_Parameter_Two);
-            fp = fopen(filename, "w");
-            fprintf(fp, "%f %f\n", Searching_Parameter_One, Searching_Parameter_Two);
-            for (int i=0; i<FP_Number; i++) {
-                Vector2D tmp_next = FP_Vertex[FP_Cell[i].index[2]] - FP_Vertex[FP_Cell[i].index[1]];
-                tmp_next = tmp_next / ~tmp_next;
-                Vector2D tmp_prev = FP_Vertex[FP_Cell[i].index[0]] - FP_Vertex[FP_Cell[i].index[1]];
-                tmp_prev = tmp_prev / ~tmp_prev;
-                double tmp_angle = tmp_prev*tmp_next;
-                fprintf(fp, "%f %f\n", FP_Vertex[FP_Cell[i].index[1]].x, tmp_angle);
-            }
-           fclose(fp);
+//            sprintf(filename, "./Angle_Data_%d/FP_Angle_%4.4f_%4.4f.dat", test_index, Searching_Parameter_One, Searching_Parameter_Two);
+//            fp = fopen(filename, "w");
+//            fprintf(fp, "%f %f\n", Searching_Parameter_One, Searching_Parameter_Two);
+//            for (int i=0; i<FP_Number; i++) {
+//                Vector2D tmp_next = FP_Vertex[FP_Cell[i].index[2]] - FP_Vertex[FP_Cell[i].index[1]];
+//                tmp_next = tmp_next / ~tmp_next;
+//                Vector2D tmp_prev = FP_Vertex[FP_Cell[i].index[0]] - FP_Vertex[FP_Cell[i].index[1]];
+//                tmp_prev = tmp_prev / ~tmp_prev;
+//                double tmp_angle = tmp_prev*tmp_next;
+//                fprintf(fp, "%f %f\n", FP_Vertex[FP_Cell[i].index[1]].x, tmp_angle);
+//            }
+//           fclose(fp);
             
             //Migration Activity Data of a Sinle FP Cell
 //            sprintf(filename, "./Migration_Activity_Data_%d/Migration_Activity_%4.4f_%4.4f_%4.4f.dat", t, test_index, Velocity_Index, Migration_Parameter);
@@ -297,7 +297,7 @@ int main(int argc, char *argv[]) {
             if (Min_FP_Centroid_x > FP_CellCentroid[i].x) Min_FP_Centroid_x = FP_CellCentroid[i].x;
         }
         
-        //FP Cell Division
+        //FP cell division is initiated by streaching edge length (Apical and Basal).
         for(int i=0; i<FP_Number; i++) {
             tmp_FP_Cell_Order[i] = FP_Cell_Order[i];
         }
@@ -380,10 +380,6 @@ int main(int argc, char *argv[]) {
             Vector2D tmp_Rand_Vector = {Normal_Distribution(0, 1), Normal_Distribution(0, 1)};
             New_FP_Vertex[i] = FP_Vertex[i] + FP_Force[i] * dt
             + sigma * sqrt(dt) * tmp_Rand_Vector;
-//            if (25.71 < t && t < 25.72) {
-//                printf("%f: %d: %f %f\n", t, i, New_FP_Vertex[i].x, New_FP_Vertex[i].y);
-//                printf("%f: %d: %f %f\n", t, i, tmp_Rand_Vector.x, tmp_Rand_Vector.y);
-//            }
             //Movement of Left Side Vertices is controled by Control_Parameter
             if (i == FixedVertexBottom || i == FixedVertexTop) {
                 New_FP_Vertex[i].x *= Control_Parameter;
@@ -408,13 +404,13 @@ int main(int argc, char *argv[]) {
         }
         for (int i=0; i<FP_Number; i++) {
             double tmp_velocity_value = Cell_Migration_Force(max_position, min_position, FP_CellCentroid[FP_Cell_Order[i]].x);
-            k1 = eta * (tmp_velocity_value - FP_Cell_Mig_Force[FP_Cell_Order[i]]);
+            k1 = (1.0/eta) * (tmp_velocity_value - FP_Cell_Mig_Force[FP_Cell_Order[i]]);
             tmp_Cell_Mig_Force = FP_Cell_Mig_Force[FP_Cell_Order[i]] + k1 * dt * 0.5;
-            k2 = eta * (tmp_velocity_value - tmp_Cell_Mig_Force);
+            k2 = (1.0/eta) * (tmp_velocity_value - tmp_Cell_Mig_Force);
             tmp_Cell_Mig_Force = FP_Cell_Mig_Force[FP_Cell_Order[i]] + k2 * dt * 0.5;
-            k3 = eta * (tmp_velocity_value - tmp_Cell_Mig_Force);
+            k3 = (1.0/eta) * (tmp_velocity_value - tmp_Cell_Mig_Force);
             tmp_Cell_Mig_Force = FP_Cell_Mig_Force[FP_Cell_Order[i]] + k3 * dt;
-            k4 = eta * (tmp_velocity_value - tmp_Cell_Mig_Force);
+            k4 = (1.0/eta) * (tmp_velocity_value - tmp_Cell_Mig_Force);
             FP_Cell_Mig_Force[FP_Cell_Order[i]] = FP_Cell_Mig_Force[FP_Cell_Order[i]]
             + (k1 + 2.0 * k2 + 2.0 * k3 + k4) * dt / 6.0;
         }

@@ -317,18 +317,18 @@ int main(int argc, char *argv[]) {
             }
             
             //Angle Data at ECM Side Posterior Vertex of a Sinle FP Cell
-            sprintf(filename, "./Angle_Data_%d/FP_Angle_%4.4f_%4.4f.dat", test_index, Velocity_Index, Migration_Parameter);
-            fp = fopen(filename, "w");
-            fprintf(fp, "%f %f\n", Velocity_Index, Migration_Parameter);
-            for (int i=0; i<FP_Number; i++) {
-                Vector2D tmp_next = FP_Vertex[FP_Cell[i].index[2]] - FP_Vertex[FP_Cell[i].index[1]];
-                tmp_next = tmp_next / ~tmp_next;
-                Vector2D tmp_prev = FP_Vertex[FP_Cell[i].index[0]] - FP_Vertex[FP_Cell[i].index[1]];
-                tmp_prev = tmp_prev / ~tmp_prev;
-                double tmp_angle = tmp_prev*tmp_next;
-                fprintf(fp, "%f %f\n", FP_Vertex[FP_Cell[i].index[1]].x, tmp_angle);
-            }
-           fclose(fp);
+//            sprintf(filename, "./Angle_Data_%d/FP_Angle_%4.4f_%4.4f.dat", test_index, Velocity_Index, Migration_Parameter);
+//            fp = fopen(filename, "w");
+//            fprintf(fp, "%f %f\n", Velocity_Index, Migration_Parameter);
+//            for (int i=0; i<FP_Number; i++) {
+//                Vector2D tmp_next = FP_Vertex[FP_Cell[i].index[2]] - FP_Vertex[FP_Cell[i].index[1]];
+//                tmp_next = tmp_next / ~tmp_next;
+//                Vector2D tmp_prev = FP_Vertex[FP_Cell[i].index[0]] - FP_Vertex[FP_Cell[i].index[1]];
+//                tmp_prev = tmp_prev / ~tmp_prev;
+//                double tmp_angle = tmp_prev*tmp_next;
+//                fprintf(fp, "%f %f\n", FP_Vertex[FP_Cell[i].index[1]].x, tmp_angle);
+//            }
+//           fclose(fp);
 
             //Angle Data at ECM Side Posterior Vertex of a Sinle HC Cell
 //           sprintf(filename, "./Angle_Data_%d/HC_Angle_%4.4f_%4.4f.dat", test_index, Velocity_Index, Migration_Parameter);
@@ -415,13 +415,16 @@ int main(int argc, char *argv[]) {
         for (int i=0; i<FP_Number; i++)
             if (FP_Cell_Energy_Data[FP_Cell_Order[i]] > Threshold)
                 FP_Cell[FP_Cell_Order[i]].divide_flag = 1;
+
         for (int i=0; i<FP_Number; i++)
             if (FP_Cell[FP_Cell_Order[i]].divide_flag == 1)
                 FP_Cell[FP_Cell_Order[i]].time += dt;
+        
         //HC Cell Calculation
         for (int i=0; i<HC_Number; i++)
             if (HC_Cell_Energy_Data[HC_Cell_Order[i]] > Threshold)
-                HC_Cell[HC_Cell_Order[i]].time += dt;
+                HC_Cell[HC_Cell_Order[i]].divide_flag = 1;
+        
         for (int i=0; i<HC_Number; i++)
             if (HC_Cell[HC_Cell_Order[i]].divide_flag == 1)
                 HC_Cell[HC_Cell_Order[i]].time += dt;
@@ -439,7 +442,7 @@ int main(int argc, char *argv[]) {
             if (Min_HC_Centroid_x > HC_CellCentroid[i].x) Min_HC_Centroid_x = HC_CellCentroid[i].x;
         }
         
-        //FP Cell Division
+        //FP cell division is initiated by streaching edge length (Apical and Basal).
         for(int i=0; i<FP_Number; i++) {
             tmp_FP_Cell_Order[i] = FP_Cell_Order[i];
         }
@@ -508,7 +511,7 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        //HC Cell Division
+        //HC cell division is initiated by streaching edge length (Apical and Basal).
         tmp_CellNumber = HC_Number;
         for(int i=0; i<HC_Number; i++) {
             tmp_HC_Cell_Order[i] = HC_Cell_Order[i]; }
@@ -673,13 +676,13 @@ int main(int argc, char *argv[]) {
         }
         for (int i=0; i<FP_Number; i++) {
             double tmp_velocity_value = Cell_Migration_Force(max_position, min_position, FP_CellCentroid[FP_Cell_Order[i]].x);
-            k1 = eta * (tmp_velocity_value - FP_Cell_Mig_Force[FP_Cell_Order[i]]);
+            k1 = (1.0/eta) * (tmp_velocity_value - FP_Cell_Mig_Force[FP_Cell_Order[i]]);
             tmp_Cell_Mig_Force = FP_Cell_Mig_Force[FP_Cell_Order[i]] + k1 * dt * 0.5;
-            k2 = eta * (tmp_velocity_value - tmp_Cell_Mig_Force);
+            k2 = (1.0/eta) * (tmp_velocity_value - tmp_Cell_Mig_Force);
             tmp_Cell_Mig_Force = FP_Cell_Mig_Force[FP_Cell_Order[i]] + k2 * dt * 0.5;
-            k3 = eta * (tmp_velocity_value - tmp_Cell_Mig_Force);
+            k3 = (1.0/eta) * (tmp_velocity_value - tmp_Cell_Mig_Force);
             tmp_Cell_Mig_Force = FP_Cell_Mig_Force[FP_Cell_Order[i]] + k3 * dt;
-            k4 = eta * (tmp_velocity_value - tmp_Cell_Mig_Force);
+            k4 = (1.0/eta) * (tmp_velocity_value - tmp_Cell_Mig_Force);
             FP_Cell_Mig_Force[FP_Cell_Order[i]] = FP_Cell_Mig_Force[FP_Cell_Order[i]]
             + (k1 + 2.0 * k2 + 2.0 * k3 + k4) * dt / 6.0;
         }
@@ -691,13 +694,13 @@ int main(int argc, char *argv[]) {
         }
         for (int i=0; i<HC_Number; i++) {
             double tmp_velocity_value = Cell_Migration_Force(max_position, min_position, HC_CellCentroid[HC_Cell_Order[i]].x);
-            k1 = eta * (tmp_velocity_value - HC_Cell_Mig_Force[HC_Cell_Order[i]]);
+            k1 = (1.0/eta) * (tmp_velocity_value - HC_Cell_Mig_Force[HC_Cell_Order[i]]);
             tmp_Cell_Mig_Force = HC_Cell_Mig_Force[HC_Cell_Order[i]] + k1 * dt * 0.5;
-            k2 = eta * (tmp_velocity_value - tmp_Cell_Mig_Force);
+            k2 = (1.0/eta) * (tmp_velocity_value - tmp_Cell_Mig_Force);
             tmp_Cell_Mig_Force = HC_Cell_Mig_Force[HC_Cell_Order[i]] + k2 * dt * 0.5;
-            k3 = eta * (tmp_velocity_value - tmp_Cell_Mig_Force);
+            k3 = (1.0/eta) * (tmp_velocity_value - tmp_Cell_Mig_Force);
             tmp_Cell_Mig_Force = HC_Cell_Mig_Force[HC_Cell_Order[i]] + k3 * dt;
-            k4 = eta * (tmp_velocity_value - tmp_Cell_Mig_Force);
+            k4 = (1.0/eta) * (tmp_velocity_value - tmp_Cell_Mig_Force);
             HC_Cell_Mig_Force[HC_Cell_Order[i]] = HC_Cell_Mig_Force[HC_Cell_Order[i]]
             + (k1 + 2.0 * k2 + 2.0 * k3 + k4) * dt / 6.0;
         }
